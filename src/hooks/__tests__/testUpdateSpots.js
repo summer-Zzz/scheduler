@@ -36,22 +36,25 @@ const state = {
 
 const getSpotsForDay = function (dayObj, appointments) {
   let count = 0; 
-  for (let id in dayObj.appointments) {
+  for (let id of dayObj.appointments) {
     if (appointments[id].interview === null) {
       count++;
     }
   }
-  console.log("......count...", count)
-  
   return count;
 }
 
 const updateSpots = function (dayName, days, appointments) {
-  const dayObj = state.days.find(day => day.name === dayName);
-  const spot = getSpotsForDay(dayObj, appointments);
-  
-  return { ...dayObj, spots: spot }
+  return state.days.map(day => {
+    if(day.name === dayName){
+      const spot = getSpotsForDay(day, appointments);
+      return { ...day, spots: spot }
+    } else {
+      return day;
+    }
+  });
 };
+
 // This is the initial state
 console.log("\n*** Initial Days State\n", state.days);
 

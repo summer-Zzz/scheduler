@@ -23,6 +23,7 @@ export default function useApplicationData(initial) {
       .put(`/api/appointments/${id}`, {interview})
       .then((res) => {
         setState({...state, appointments});
+        setState(updateSpots)
       })
   }
 
@@ -39,10 +40,30 @@ export default function useApplicationData(initial) {
       .delete(`/api/appointments/${id}`) 
       .then((res) => {
         setState({...state, appointments})
+        setState(updateSpots)
       })
   }
 
   const setDay = (day) => setState({ ...state, day });
+
+
+  const getSpotsForDay = function (dayObj, appointments) {
+    let count = 0; 
+    for (let id of dayObj.appointments) {
+      if (appointments[id].interview === null) {
+        count++;
+      }
+    }
+    return count;
+  }
+  
+  const updateSpots = function (state) {
+    const days = state.days.map(day => {
+        const spot = getSpotsForDay(day, state.appointments);
+        return { ...day, spots: spot }
+    });
+    return {...state, days}
+  };
 
   useEffect(() => {
     const getDays = "/api/days";
@@ -57,7 +78,7 @@ export default function useApplicationData(initial) {
     })
   }, []);
 
-  return { state, setDay, bookInterview, cancelInterview };
+  return { state, setDay, bookInterview, cancelInterview, updateSpots };
 }
 
 
